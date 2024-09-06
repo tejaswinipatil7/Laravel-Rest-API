@@ -5,16 +5,28 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use Illuminate\Support\Facades\Storage;
+use App\Services\PostService;
 
 
 class PostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $postService;
+
+    public function __construct(PostService $postService)
+    {
+        $this->postService = $postService;
+    }
+
     public function index()
     {
-        return response()->json(Post::all());
+        $posts = $this->postService->getAllPosts();
+        return view('posts.index', compact('posts'));
+    }
+
+    public function show($id)
+    {
+        $post = $this->postService->getPostById($id);
+        return view('posts.show', compact('post'));
     }
 
     /**
@@ -83,14 +95,7 @@ class PostController extends Controller
         //     'post' => $post,
         // ], 201);
     }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Post $post)
-    {
-        return response()->json($post);
-    }
+    
 
     /**
      * Update the specified resource in storage.
